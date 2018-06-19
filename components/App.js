@@ -11,15 +11,20 @@ handleSearch: function(searchingText) {
     this.setState({
       loading: true  
     });
-    this.getGif(searchingText, function(gif) {  
-      this.setState({  
-        loading: false,  
-        gif: gif,  
-        searchingText: searchingText  
-      });
-    }.bind(this));
-  },
-getGif: function(searchingText, callback) {  
+
+    this.getGif(searchingText)
+            .then(gif => {
+                this.setState({
+                    loading: false,
+                    gif: gif,
+                    searchingText: searchingText          
+                });
+            })
+            .catch(error => console.log('Error', error));
+    },
+
+
+getGif: function(searchingText) {  
     var GIPHY_PUB_KEY = 'ynoXAdyVw70XTvasGp4QSwIXxSGY4GW5';
     var GIPHY_API_URL = 'https://api.giphy.com';
     var url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;  
