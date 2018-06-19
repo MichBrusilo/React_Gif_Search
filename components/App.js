@@ -29,19 +29,29 @@ getGif: function(searchingText) {
     var GIPHY_API_URL = 'https://api.giphy.com';
     var url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;  
     var xhr = new XMLHttpRequest();  
-    xhr.open('GET', url);
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-           var data = JSON.parse(xhr.responseText).data; 
-            var gif = {  
-                url: data.fixed_width_downsampled_url,
-                sourceUrl: data.url
-            };
-            callback(gif);  
-        }
-    };
-    xhr.send();
-},
+    return new Promise(
+            function(resolve, reject) {
+                var request = new XMLHttpRequest();
+                request.onload = function() {
+                    if (this.status === 200) {
+                        var data = JSON.parse(request.responseText).data;
+                        var gif = {
+                            url: data.fixed_width_downsampled_url,
+                            sourceUrl: data.url
+                        }
+                        resolve(gif);
+                    } else {
+                        reject(new Error(this.statusText));
+                    }
+                };
+                request.onerror = function() {
+                    reject(new Error(
+                        `XMLHttpRequest Error: ${this.statusText}`));
+                };
+                request.open('GET', url);
+                request.send();
+            });
+    },
     render: function() {
 
         var styles = {
